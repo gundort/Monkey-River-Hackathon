@@ -1,13 +1,14 @@
+using BackEnd.Models;
+using BackEnd.Services.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using BackEnd.Models;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BackEnd.Services
 {
-    public class JwtService
+    public class JwtService : IJwtService
     {
         private readonly IConfiguration _configuration;
 

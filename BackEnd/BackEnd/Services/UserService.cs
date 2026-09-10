@@ -15,14 +15,14 @@ namespace BackEnd.Services
 
         public async Task<User> GetUserByIdAsync(string id)
         {
-            return await _mongoDbContext.Users()
+            return await _mongoDbContext.Users
                 .Find(u => u.Id == id)
                 .FirstOrDefaultAsync();
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _mongoDbContext.Users()
+            return await _mongoDbContext.Users
                 .Find(u => u.Email == email)
                 .FirstOrDefaultAsync();
         }
@@ -38,7 +38,7 @@ namespace BackEnd.Services
                 filter = filterBuilder.And(filter, excludeFilter);
             }
 
-            var existingUser = await _mongoDbContext.Users()
+            var existingUser = await _mongoDbContext.Users
                 .Find(filter)
                 .FirstOrDefaultAsync();
             
@@ -49,7 +49,7 @@ namespace BackEnd.Services
         {
             user.UpdatedAt = DateTime.UtcNow;
             var filter = Builders<User>.Filter.Eq(u => u.Id, id);
-            await _mongoDbContext.Users().ReplaceOneAsync(filter, user);
+            await _mongoDbContext.Users.ReplaceOneAsync(filter, user);
         }
 
         public async Task UpdateUserPasswordAsync(string id, string newPasswordHash)
@@ -59,7 +59,7 @@ namespace BackEnd.Services
                 .Set(u => u.PasswordHash, newPasswordHash)
                 .Set(u => u.UpdatedAt, DateTime.UtcNow);
 
-            await _mongoDbContext.Users().UpdateOneAsync(filter, update);
+            await _mongoDbContext.Users.UpdateOneAsync(filter, update);
         }
         
         public async Task UpdateUserPreferencesAsync(string id, UserPreferences preferences)
@@ -69,7 +69,7 @@ namespace BackEnd.Services
                 .Set(u => u.Preferences, preferences)
                 .Set(u => u.UpdatedAt, DateTime.UtcNow);
 
-            await _mongoDbContext.Users().UpdateOneAsync(filter, update);
+            await _mongoDbContext.Users.UpdateOneAsync(filter, update);
         }
     }
 }

@@ -1,9 +1,10 @@
-using System;
 using BackEnd.DTOs;
 using BackEnd.Models;
 using BackEnd.Services;
+using BackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using System;
 
 namespace BackEnd.Controllers
 {
@@ -11,10 +12,10 @@ namespace BackEnd.Controllers
     [Route("api/v1/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly MongoDbContext _mongoDbContext;
-        private readonly JwtService _jwtService;
+        private readonly IMongoDbContext _mongoDbContext;
+        private readonly IJwtService _jwtService;
 
-        public AuthController(MongoDbContext mongoDbContext, JwtService jwtService)
+        public AuthController(IMongoDbContext mongoDbContext, IJwtService jwtService)
         {
             _mongoDbContext = mongoDbContext;
             _jwtService = jwtService;
@@ -27,7 +28,7 @@ namespace BackEnd.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var existingUser = await _mongoDbContext.Users()
+            var existingUser = await _mongoDbContext.Users
                 .Find(u => u.Email == registerDto.Email)
                 .FirstOrDefaultAsync();
 
@@ -45,7 +46,7 @@ namespace BackEnd.Controllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _mongoDbContext.Users().InsertOneAsync(user);
+            await _mongoDbContext.Users.InsertOneAsync(user);
             var token = _jwtService.GenerateToken(user);
 
             var response = new AuthResponseDto
@@ -67,7 +68,7 @@ namespace BackEnd.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var user = await _mongoDbContext.Users()
+            var user = await _mongoDbContext.Users
                 .Find(u => u.Email == loginDto.Email)
                 .FirstOrDefaultAsync();
 

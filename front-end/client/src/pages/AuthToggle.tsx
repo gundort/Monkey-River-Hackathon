@@ -1,5 +1,7 @@
 import React, { useState, useRef, type FormEvent } from "react";
 import "../style/AuthToggle.css";
+import { useNavigate } from 'react-router-dom'
+
 
 interface FormState {
   firstName: string;
@@ -30,6 +32,8 @@ function AuthToggle() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const eyeRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
+    const navigate = useNavigate();
+// show loading spinner
 
   const handleToggle = () => {
     setIsRegister((prev) => !prev);
@@ -62,9 +66,14 @@ function AuthToggle() {
     if (!validate()) return;
 
     if (isRegister) {
+
+
+      try {
+
+      
     console.log( "Registering", form);
        // Registration request
-        const response = await fetch('http://localhost:5000/api/auth/register', {
+        const response = await fetch(`https://hackathonteam6api-gbabgfcsg2cngygr.canadacentral-01.azurewebsites.net/api/v1/Auth/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -82,16 +91,58 @@ function AuthToggle() {
         if (response.ok) {
           console.log("Registration successful", data);
           // Handle successful registration (e.g., show success message, redirect)
-          alert("Registration successful! Please check your email to verify your account.");
+          alert("Registration successful! Please go and log in");
+          setIsRegister(false);
         } else {
           // Handle server validation errors
-          setErrors({
-            general: data.message || "Registration failed"
-          });
+          // setErrors({
+            // general: data.message || "Registration failed"
+            console.log("registration failed", data)
+          // });
         }
+
+      } catch (e) {
+        console.log("error", e)
+      }
 
     } else {
     console.log("Logging in", form);
+       const response = await fetch(`https://hackathonteam6api-gbabgfcsg2cngygr.canadacentral-01.azurewebsites.net/api/v1/Auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Login response:", data);
+
+      if (response.ok) {
+
+        console.log("Login successful", data);
+        // Storing token in localStorage
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+          // as well user info
+          localStorage.setItem('user', JSON.stringify({
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName
+          }));
+          
+          // Redirect to dashboard
+          navigate('/dashboard', { replace: true })
+         
+        }
+      } else {
+        console.log("Login unsuccessful", data);
+        
+      }
+    
 
     }
   };

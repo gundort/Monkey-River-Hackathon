@@ -4,7 +4,7 @@ using MongoDB.Driver;
 
 namespace BackEnd.Models
 {
-    public class MongoDbContext
+    public class MongoDbContext : IMongoDbContext
     {
         private readonly IMongoDatabase _database;
 
@@ -18,11 +18,8 @@ namespace BackEnd.Models
         public IMongoCollection<DiagnosticTest> DiagnosticTests => _database.GetCollection<DiagnosticTest>("DiagnosticTests");
         public IMongoCollection<MonitoredDestination> MonitoredDestinations => _database.GetCollection<MonitoredDestination>("MonitoredDestinations");
         public IMongoCollection<TravelAlert> TravelAlerts => _database.GetCollection<TravelAlert>("travelAlerts");
+        public IMongoCollection<User> Users => _database.GetCollection<User>("users");
 
-        public IMongoCollection<User> Users()
-        {
-            return _database.GetCollection<User>("users");
-        }
         public async Task<bool> PingAsync()
         {
             try
