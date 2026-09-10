@@ -57,10 +57,43 @@ function AuthToggle() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log(isRegister ? "Registering" : "Logging in", form);
+
+    if (isRegister) {
+    console.log( "Registering", form);
+       // Registration request
+        const response = await fetch('http://localhost:5000/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: form.firstName,
+            lastName: form.lastName,
+            email: form.email,
+            password: form.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log("Registration successful", data);
+          // Handle successful registration (e.g., show success message, redirect)
+          alert("Registration successful! Please check your email to verify your account.");
+        } else {
+          // Handle server validation errors
+          setErrors({
+            general: data.message || "Registration failed"
+          });
+        }
+
+    } else {
+    console.log("Logging in", form);
+
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

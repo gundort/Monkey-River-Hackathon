@@ -18,9 +18,9 @@ namespace BackEnd.Services
 
         public string GenerateToken(User user)
         {
-            var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
-            var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
-            var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? _configuration["Jwt:Key"];
+            var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? _configuration["Jwt:Issuer"];
+            var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? _configuration["Jwt:Audience"];
 
             if (string.IsNullOrEmpty(jwtKey))
             {

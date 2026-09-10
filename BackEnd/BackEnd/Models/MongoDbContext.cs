@@ -8,12 +8,21 @@ namespace BackEnd.Models
     {
         private readonly IMongoDatabase _database;
 
-        public MongoDbContext(IOptions<MongoDbSettings> settings)
+        public MongoDbContext(MongoDbSettings settings)
         {
-            var client = new MongoClient(settings.Value.ConnectionString);
-            _database = client.GetDatabase(settings.Value.DatabaseName);
+            var client = new MongoClient(settings.ConnectionString);
+            _database = client.GetDatabase(settings.DatabaseName);
         }
 
+        public IMongoDatabase Database => _database;
+        public IMongoCollection<DiagnosticTest> DiagnosticTests => _database.GetCollection<DiagnosticTest>("DiagnosticTests");
+        public IMongoCollection<MonitoredDestination> MonitoredDestinations => _database.GetCollection<MonitoredDestination>("MonitoredDestinations");
+        public IMongoCollection<TravelAlert> TravelAlerts => _database.GetCollection<TravelAlert>("travelAlerts");
+
+        public IMongoCollection<User> Users()
+        {
+            return _database.GetCollection<User>("users");
+        }
         public async Task<bool> PingAsync()
         {
             try
@@ -25,11 +34,6 @@ namespace BackEnd.Models
             {
                 return false;
             }
-        }
-
-        public IMongoCollection<User> Users()
-        {
-            return _database.GetCollection<User>("users");
         }
     }
 }
